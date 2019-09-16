@@ -14,10 +14,10 @@ Proyek ini masih dalam tahap pengembangan, semua resiko harap tanggung sendiri.
 <img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/register.jpg" width="200" height="350"/>
 <img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/home.jpg" width="200" height="350"/>
 <img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/profile.jpg" width="200" height="350"/>
-<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1567930033/KedaiKito/add-offer.jpg" width="200" height="350"/>
-<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1567930033/KedaiKito/list-kos.jpg" width="200" height="350"/>
-<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1567930033/KedaiKito/detail-kos.jpg" width="200" height="350"/>
-<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1567930033/KedaiKito/booking.jpg" width="200" height="350"/>
+<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/add-offer.jpg" width="200" height="350"/>
+<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/list-kos.jpg" width="200" height="350"/>
+<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/detail-kos.jpg" width="200" height="350"/>
+<img src="https://res.cloudinary.com/rahmat-st/image/upload/v1568603990/MisterKos/booking.jpg" width="200" height="350"/>
 </p>
 
 ## Fitur

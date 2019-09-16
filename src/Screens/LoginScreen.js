@@ -54,7 +54,7 @@ export default class LoginScreen extends Component {
         <Circle position='absolute' width={140} height={140} bgColor={primaryColor} top={0} right={0} bottomLeftRad={140} />
 
         <View style={{ flex: 1 }}>
-          <Image source={require('../Assets/logo_mamikos_green.png')} style={styles.logo} />
+          <Image source={require('../Assets/Images/logo.png')} style={styles.logo} />
         </View>
 
         <View style={{ flex: 3, alignItems: 'center', zIndex: 99 }}>

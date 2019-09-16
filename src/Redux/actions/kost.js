@@ -1,6 +1,3 @@
-import axios from 'axios';
-import config from '../../config';
-
 export const getListKost = (kost) => {
   return {
     type: 'GET_KOST',

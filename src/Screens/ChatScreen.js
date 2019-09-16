@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { Container, Header, Content, List, ListItem, Left, Body, Right, Thumbnail } from 'native-base';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class ChatScreen extends Component {
   static navigationOptions = {
@@ -14,9 +15,60 @@ export default class ChatScreen extends Component {
 
   render() {
     return(
-      <View style={{flex: 1}}>
-        <Image style={{flex: 1, resizeMode: 'stretch'}} source={{uri: 'https://storage.googleapis.com/helpdocs-assets/9QvYLMyX1C/articles/pp1dbfyjlj/1519224172266/chat-fragment.png'}} />
-      </View>
+      <Container>
+        <Content style={{padding: 8}}>
+          <List>
+            <ListItem avatar>
+              <Left>
+                <Thumbnail source={require('../Assets/Images/logo.png')} />
+              </Left>
+              <Body>
+                <Text style={{fontWeight: 'bold'}}>Kumar Pratik</Text>
+                <Text note>Doing what you like will always keep you happy . .</Text>
+              </Body>
+              <Right>
+                <Text note>3:43 pm</Text>
+              </Right>
+            </ListItem>
+            <ListItem avatar>
+              <Left>
+                <Thumbnail source={require('../Assets/Images/logo.png')} />
+              </Left>
+              <Body>
+                <Text style={{fontWeight: 'bold'}}>Kumar Pratik</Text>
+                <Text note>Doing what you like will always keep you happy . .</Text>
+              </Body>
+              <Right>
+                <Text note>3:43 pm</Text>
+              </Right>
+            </ListItem>
+            <ListItem avatar>
+              <Left>
+                <Thumbnail source={require('../Assets/Images/logo.png')} />
+              </Left>
+              <Body>
+                <Text style={{fontWeight: 'bold'}}>Kumar Pratik</Text>
+                <Text note>Doing what you like will always keep you happy . .</Text>
+              </Body>
+              <Right>
+                <Text note>3:43 pm</Text>
+              </Right>
+            </ListItem>
+            <ListItem avatar>
+              <Left>
+                <Thumbnail source={require('../Assets/Images/logo.png')} />
+              </Left>
+              <Body>
+                <Text style={{fontWeight: 'bold'}}>Kumar Pratik</Text>
+                <Text note>Doing what you like will always keep you happy . .</Text>
+              </Body>
+              <Right>
+                <Text note>3:43 pm</Text>
+              </Right>
+            </ListItem>
+          </List>
+        </Content>
+      </Container>
     );
   }
 }

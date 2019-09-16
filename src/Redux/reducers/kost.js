@@ -1,5 +1,6 @@
 const initialState = {
   isLoading: false,
+  isDetailLoading: false,
   error: null,
   data: [],
   detail: {}
@@ -23,14 +24,14 @@ const kost = (state = initialState, action) => {
     case 'GET_DETAIL_KOST':
       return {
         ...state,
-        isLoading: false,
+        isDetailLoading: false,
         detail: action.payload
       }
 
     case 'GET_DETAIL_KOST_PENDING':
       return {
         ...state,
-        isLoading: true
+        isDetailLoading: true
       }
 
     default:

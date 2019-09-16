@@ -4,15 +4,18 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import HomeNavigator from './HomeNav';
 import AuthNavigator from './AuthNav';
 
+import WelcomeScreen from '../Screens/Welcome';
+
 const AppNavigator = createSwitchNavigator(
   {
-    Login: AuthNavigator,
+    Welcome: WelcomeScreen,
+    Auth: AuthNavigator,
     Home: HomeNavigator
   },
   {
-    initialRouteName: 'Login',
+    headerMode: 'none',
     defaultNavigationOptions: {
-      header: null
+      header: null,
     },
   }
 )

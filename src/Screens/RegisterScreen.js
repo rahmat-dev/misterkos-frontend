@@ -2,14 +2,12 @@ import React, { Component } from 'react'
 import { View, Modal, TouchableOpacity, Image } from 'react-native';
 import { Container, Button, Content, Form, Item, Input, Label } from 'native-base';
 import { Text, TextInput, Checkbox, RadioButton } from 'react-native-paper';
-import ImagePicker from 'react-native-image-crop-picker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import axios from 'axios';
 import config from '../config';
 
-import { styles } from '../Assets/Styles/register';
 import { primaryColor } from '../Assets/Styles/colors';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Register extends Component {
   constructor(props) {
@@ -24,68 +22,40 @@ export default class Register extends Component {
       gender: '',
       phone: '',
       modalVisible: false,
-      avatarSource: null
+      avatar: 'avatar.png'
     }
   }
 
   validate = (data) => {
-    const { name, username, password, repassword, gender, phone, avatarSource } = data
+    const { name, username, password, repassword, gender, phone } = data
 
     if (password != repassword) {
       return alert('Password harus sama dengan konfirmasi password!!')
     } else {
       this.register()
     }
-
   }
 
-  register = async () => {
-    const { name, username, password, repassword, gender, phone, avatarSource } = this.state
-    
-    ext = avatarSource.mime.split('/')
-    ext = ext[ext.length-1]
+  
 
-    let formData = new FormData()
-    formData.append('name', name)
-    formData.append('username', username)
-    formData.append('password', password)
-    formData.append('gender', gender)
-    formData.append('phone', phone)
-    formData.append('avatar', {
-      uri: Platform.OS === "android" ? avatarSource.path : avatarSource.path.replace("file://", ""),
-      type: avatarSource.mime,
-      name: `avatar.${ext}`
-    });
+  register = async () => {
+    const data = {...this.state}
+    console.log(data);
     
     await axios.post(
       `${config.API_URL}/register`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Accept": "application/json"
-        }
-      }
+      data,
     ).then((res) => {
-      res.data.error ? alert(res.data.message) : this.setState({ modalVisible: true })
+      res.data.error ? alert(res.data.message) :
+        AsyncStorage.setItem('token', res.data.token)
+        this.props.navigation.navigate('Home')
     }).catch(error => {
       console.log(error)
     })
   }
 
-  chooseImage = () => {
-    ImagePicker.openPicker({
-      width: 500,
-      height: 500,
-      cropping: true,
-      includeBase64: true
-    }).then(avatarSource => {
-      this.setState({avatarSource})
-    });
-  }
-
   render() {
-    const { avatarSource, gender, checked, modalVisible } = this.state
+    const { gender, checked, modalVisible } = this.state
 
     return (
       <Container style={{ paddingBottom: 0 }}>
@@ -105,7 +75,7 @@ export default class Register extends Component {
 
         <Content style={{ paddingTop: 32 }}>
           <View style={{ paddingHorizontal: 32 }}>
-            <Text style={{ textAlign: 'center', fontSize: 24, color: primaryColor }}>Daftar ke mamikos.com</Text>
+            <Text style={{ textAlign: 'center', fontSize: 24, color: primaryColor }}>Daftar ke misterkos.com</Text>
             
             <Form style={{marginTop: 16}}>
               <View style={{marginVertical: 4}}>
@@ -138,15 +108,6 @@ export default class Register extends Component {
               </View>
               <View style={{marginVertical: 4}}>
                 <TextInput mode='outlined' placeholder='Nomor Telepon' onChangeText={(phone) => this.setState({ phone })} />
-              </View>
-              <View style={{ marginTop: 8, alignItems: 'center' }}>
-                {avatarSource && (
-                  <Image source={{ uri: avatarSource.path }} style={{ marginVertical: 8, width: 280, height: 280 }} />
-                )}
-                <TouchableOpacity style={styles.btnUpload} onPress={() => this.chooseImage()}>
-                  <Icon name='add-a-photo' size={18} style={{ marginRight: 8 }} />
-                  <Text>Upload foto</Text>
-                </TouchableOpacity>
               </View>
             </Form>
 

@@ -9,6 +9,7 @@ import AddOfferScreen from '../Screens/AddOfferScreen';
 import ListKostScreen from '../Screens/ListKostScreen';
 import DetailKostScreen from '../Screens/DetailKostScreen';
 import BookingScreen from '../Screens/BookingScreen';
+import DetailBookingScreen from '../Screens/DetailBookingScreen';
 import ListBookingScreen from '../Screens/ListBookingScreen';
 import ListOfferScreen from '../Screens/ListOfferScreen';
 
@@ -42,6 +43,7 @@ const StackNavigator = createStackNavigator(
     AddOffer: AddOfferScreen,
     DetailKost: DetailKostScreen,
     Booking: BookingScreen,
+    DetailBooking: DetailBookingScreen,
     ListBooking: ListBookingScreen,
     ListOffer: ListOfferScreen,
   },

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, StatusBar } from 'react-native';
 import { Searchbar, Button, TextInput, RadioButton } from 'react-native-paper'
 import { Container, Form, Item, Input, Label, Content } from 'native-base';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-community/async-storage'
@@ -15,7 +15,7 @@ import { styles as regis } from '../Assets/Styles/register';
 
 export default class AddOffer extends Component {
   static navigationOptions = {
-    title: 'Tambah Data Iklan',
+    title: 'Pasang Iklan',
   }
 
   constructor() {
@@ -25,8 +25,10 @@ export default class AddOffer extends Component {
       searchCity: null,
       title: null,
       address: null,
-      latitude: null,
-      longitude: null,
+      region: {
+        latitude: -6.301576,
+        longitude: 106.7351054,
+      },
       type: null,
       long: null,
       wide: null,
@@ -42,31 +44,22 @@ export default class AddOffer extends Component {
     }
   }
 
-  chooseImage1 = (options) => {
-    ImagePicker.openPicker(options).then(image1 => {
-      console.log('image 1', image1)
-      this.setState({image1})
-    })
-  }
-
-  chooseImage2 = (options) => {
-    ImagePicker.openPicker(options).then(image2 => {
-      console.log('image 2', image2)
-      this.setState({image2})
-    })
-  }
-
-  chooseImage3 = (options) => {
-    ImagePicker.openPicker(options).then(image3 => {
-      console.log('image 3', image3)
-      this.setState({image3})
+  chooseImage = (options) => {
+    ImagePicker.openPicker(options).then(image => {
+      console.log('image : ', image)
+      this.setState({
+        image1: {...image[0]},
+        image2: {...image[1]},
+        image3: {...image[2]}
+      })
+      console.log(this.state.image1, this.state.image2, this.state.image3)
     })
   }
 
   addOffer = async () => {
-    const { title, address, latitude, longitude, type, long, wide, totalRoom, emptyRoom, price, facilities, bathroom, image1, image2, image3, description } = this.state
+    const { title, address, type, long, wide, totalRoom, emptyRoom, price, facilities, bathroom, image1, image2, image3, description } = this.state
+    const {latitude, longitude} = this.state.region
     let token = await AsyncStorage.getItem('token')
-
 
     let ext1 = image1.mime.split('/')
     ext1 = ext1[ext1.length-1]
@@ -123,7 +116,10 @@ export default class AddOffer extends Component {
         }
       }
     ).then((res) => {
-      alert(res.data.status)
+      if (res.data.status == 'success') {
+        alert('Data berhasil di tambahkan')
+        this.props.navigation.navigate('Home')
+      }
     }).catch(error => {
       console.log(error)
     })
@@ -135,11 +131,14 @@ export default class AddOffer extends Component {
       width: 640,
       height: 420,
       cropping: true,
-      includeBase64: true
+      includeBase64: true,
+      multiple: true,
+      maxFiles: 3
     }
 
     return (
       <Container>
+        <StatusBar backgroundColor='#0baa56' barStyle='light-content' />
         <Content>
           <Form style={{paddingVertical: 8, paddingHorizontal: 16}}>
             <View style={{marginVertical: 4}}>
@@ -150,9 +149,26 @@ export default class AddOffer extends Component {
               <TextInput label='Alamat' mode='outlined' onChangeText={(address) => this.setState({ address })} value={data.address} style={{backgroundColor: 'white'}}/>
             </View>
 
-            <View style={{marginVertical: 4, flexDirection: 'row', justifyContent: 'space-between'}}>
-              <TextInput label='Latitude' mode='outlined' onChangeText={(latitude) => this.setState({ latitude })} value={data.latitude} style={{flex: .49, backgroundColor: 'white'}}/>
-              <TextInput label='Longitude' mode='outlined' onChangeText={(longitude) => this.setState({ longitude })} style={{flex: .49, backgroundColor: 'white'}}/>
+            <View style={{width: '100%', height: 320, marginVertical: 4, flexDirection: 'row', justifyContent: 'space-between'}}>
+              <MapView style={{ flex: 1 }}
+                showsUserLocation
+                region={{
+                  ...this.state.region,
+                  latitudeDelta: 0.015,
+                  longitudeDelta: 0.0121,
+                }}
+                onPress={e => this.setState({
+                  region: {
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude
+                  }
+                })}
+              >
+                <Marker
+                  coordinate={this.state.region}
+                  image={{ uri: 'https://image.flaticon.com/icons/svg/25/25231.svg' }}
+                />
+              </MapView>
             </View>
 
             {/* <View style={{marginVertical: 4, flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -168,15 +184,15 @@ export default class AddOffer extends Component {
                 value={data.type}
               >
                 <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
-                  <RadioButton value="Putra" color='#0baa56' />
+                  <RadioButton value="PUTRA" color='#0baa56' />
                   <Text>Putra</Text>
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <RadioButton value="Putri" color='#0baa56' />
+                  <RadioButton value="PUTRI" color='#0baa56' />
                   <Text>Putri</Text>
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <RadioButton value="Campur" color='#0baa56' />
+                  <RadioButton value="CAMPUR" color='#0baa56' />
                   <Text>Campur</Text>
                 </View>
               </RadioButton.Group>
@@ -230,11 +246,11 @@ export default class AddOffer extends Component {
                 value={data.bathroom}
               >
                 <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
-                  <RadioButton value="luar" color='#0baa56' />
+                  <RadioButton value="LUAR" color='#0baa56' />
                   <Text>Di Luar</Text>
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <RadioButton value="dalam" color='#0baa56' />
+                  <RadioButton value="DALAM" color='#0baa56' />
                   <Text>Di Dalam</Text>
                 </View>
               </RadioButton.Group>
@@ -249,31 +265,17 @@ export default class AddOffer extends Component {
             </View>
 
             <View style={{ marginTop: 8, alignItems: 'flex-start' }}>
-              <TouchableOpacity style={regis.btnUpload} onPress={() => this.chooseImage1(imageOptions)}>
+              <TouchableOpacity style={regis.btnUpload} onPress={() => this.chooseImage(imageOptions)}>
                 <Icon name='add-a-photo' size={18} style={{ marginRight: 8 }} />
                 <Text>{data.image1 != null ? 'Ganti foto' : 'Upload foto'}</Text>
               </TouchableOpacity>
-              {data.image1 && (
+              {data.image1 != null && (
                 <Image source={{ uri: data.image1.path }} style={{ marginVertical: 8, width: '100%', height: 180, maxWidth: '100%' }} />
               )}
-            </View>
-
-            <View style={{ marginTop: 8, alignItems: 'flex-start' }}>
-              <TouchableOpacity style={regis.btnUpload} onPress={() => this.chooseImage2(imageOptions)}>
-                <Icon name='add-a-photo' size={18} style={{ marginRight: 8 }} />
-                <Text>{data.image2 != null ? 'Ganti foto' : 'Upload foto'}</Text>
-              </TouchableOpacity>
-              {data.image2 && (
+              {data.image2 != null && (
                 <Image source={{ uri: data.image2.path }} style={{ marginVertical: 8, width: '100%', height: 180, maxWidth: '100%' }} />
               )}
-            </View>
-
-            <View style={{ marginTop: 8, alignItems: 'flex-start' }}>
-              <TouchableOpacity style={regis.btnUpload} onPress={() => this.chooseImage3(imageOptions)}>
-                <Icon name='add-a-photo' size={18} style={{ marginRight: 8 }} />
-                <Text>{data.image3 != null ? 'Ganti foto' : 'Upload foto'}</Text>
-              </TouchableOpacity>
-              {data.image3 && (
+              {data.image3 != null && (
                 <Image source={{ uri: data.image3.path }} style={{ marginVertical: 8, width: '100%', height: 180, maxWidth: '100%' }} />
               )}
             </View>

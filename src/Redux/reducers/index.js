@@ -1,14 +1,11 @@
 import { combineReducers } from 'redux';
-// import { createNavigationReducer } from 'react-navigation-redux-helpers';
 
-// import RootNavigation from '../../Navigations/RootNavigation';
 import kost from './kost';
-
-// const router = createNavigationReducer(RootNavigation)
+import user from './user';
 
 const appReducer = combineReducers({
-  // router,
-  kost
+  kost,
+  user
 })
 
 export default appReducer

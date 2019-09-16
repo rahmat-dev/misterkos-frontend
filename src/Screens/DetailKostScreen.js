@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Image, ScrollView, Dimensions, Share } from 'react-native'
+import { Image, ScrollView, Dimensions, Share, ActivityIndicator } from 'react-native'
 import { Container, Content, Footer, FooterTab, Button, View, Text, Right, Item } from 'native-base';
 import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-
 import { connect } from 'react-redux';
-import * as actionKost from '../Redux/actions/kost';
 
-import ImageDetail from '../Components/ImageDetail';
 import config from '../config';
+import * as actionKost from '../Redux/actions/kost';
+import ImageDetail from '../Components/ImageDetail';
+import priceFormat from '../Utils/priceFormat';
 
 class DetailKost extends Component {
   static navigationOptions = {
@@ -17,14 +17,14 @@ class DetailKost extends Component {
     headerRight: (
       <View style={{ flexDirection: 'row' }}>
         <Icon
-          onPress={() => alert('Berhasil ditambahkan ke favorit')}
-          name='favorite-border'
+          onPress={() => Share.share({ message: 'Ini kos' })}
+          name='share'
           size={24}
           style={{ marginEnd: 16 }}
         />
         <Icon
-          onPress={() => Share.share({ message: 'Ini kos' })}
-          name='share'
+          onPress={() => alert('Berhasil ditambahkan ke favorit')}
+          name='favorite-border'
           size={24}
           style={{ marginEnd: 16 }}
         />
@@ -42,16 +42,6 @@ class DetailKost extends Component {
     }
   }
 
-  async componentDidMount() {
-    const id = this.props.navigation.getParam('id')
-    this.props.getDetailKostPending()
-
-    await axios.get(`${config.API_URL}/kost/${id}`).then(res => {
-      const kost = res.data
-      this.props.getDetailKost(kost)
-    })
-  }
-
   render() {
     const kost = this.props.kost.detail
     const imageUri = [kost.image1, kost.image2, kost.image3]
@@ -59,12 +49,7 @@ class DetailKost extends Component {
     // console.log(kost)
 
     return (
-      <Container style={{position: 'relative'}}>
-        {this.props.kost.isLoading ?
-          <View style={{position: 'absolute', top:0, bottom: 0, left: 0, right: 0, backgroundColor: 'white', width: '100%', height: '100%'}}>
-            <Text>Loading...</Text>
-          </View>
-        : null}
+      <Container style={{ position: 'relative' }}>
         <Content>
           <View>
             {this.state.tabActive == 1 ?
@@ -78,7 +63,6 @@ class DetailKost extends Component {
                   longitudeDelta: 0.0121,
                 }}
                 showsUserLocation
-                scrollEnabled={false}
               >
                 <Marker coordinate={{
                   latitude: parseFloat(kost.latitude),
@@ -119,7 +103,7 @@ class DetailKost extends Component {
             </View>
 
 
-            <View style={{ flexDirection: 'row', paddingVertical: 8, borderTopWidth: 0.5, borderBottomWidth: 0.5, marginVertical: 8 }}>
+            <View style={{ flexDirection: 'row', paddingVertical: 8, borderTopWidth: 0.5, borderBottomWidth: 0.5 }}>
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                 <Icon name='power' size={14} color={'gray'} />
                 <Text style={{ color: 'gray', fontSize: 14 }}>Tidak termasuk listrik</Text>
@@ -131,56 +115,59 @@ class DetailKost extends Component {
             </View>
 
             <View>
-              <Text style={{ fontWeight: 'bold', fontSize: 14, marginVertical: 8 }}>Luas Kamar</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon name='zoom-out-map' size={28} color='green' />
-                <Text style={{ marginLeft: 10 }}>{kost.long} x {kost.wide} meter</Text>
-              </View>
-
-              <View >
-                <Text style={{ fontWeight: 'bold', fontSize: 14, marginVertical: 18 }}>Fasilitas kos dan kamar</Text>
-              </View>
-              <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 12 }}>
-                    <Icon name='airline-seat-individual-suite' size={25} /><Text>Kasur</Text>
-                  </View>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 12 }}>
-                    <Icon name='wifi' size={25} /><Text>Wifi - Internet</Text>
-                  </View>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 12 }}>
-                    <Icon name='hot-tub' size={25} /><Text>Kamar Mandi</Text>
-                  </View>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 12 }}>
-                    <Icon name='kitchen' size={25} /><Text>Dapur</Text>
-                  </View>
-                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 12 }}>
-                    <Icon name='airline-seat-individual-suite' size={25} /><Text>Kasur</Text>
-                  </View >
-                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 12 }}>
-                    <Icon name='wifi' size={25} /><Text>Wifi - Internet</Text>
-                  </View>
+              <View style={{ marginVertical: 8 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Luas Kamar</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Icon name='zoom-out-map' size={28} color='green' />
+                  <Text style={{ marginLeft: 10 }}>{kost.long} x {kost.wide} meter</Text>
                 </View>
-              </ScrollView>
-
-              <View >
-                <Text style={{ fontWeight: 'bold', fontSize: 14, marginVertical: 18 }}>Deskripsi Kos</Text>
               </View>
-              <View >
-                <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
-                  {kost.description}
-                </Text>
+
+              <View style={{ marginVertical: 8 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 4 }}>Fasilitas Lainnya</Text>
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 }}>
+                    <Icon name='airline-seat-individual-suite' size={24} color='#0baa56' /><Text style={{ color: '#0baa56', fontSize: 12 }}>Kasur</Text>
+                  </View>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 }}>
+                    <Icon name='wifi' size={24} color='#0baa56' /><Text style={{ color: '#0baa56', fontSize: 12 }}>Wifi - Internet</Text>
+                  </View>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 }}>
+                    <Icon name='hot-tub' size={24} color='#0baa56' /><Text style={{ color: '#0baa56', fontSize: 12 }}>Kamar Mandi</Text>
+                  </View>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 }}>
+                    <Icon name='kitchen' size={24} color='#0baa56' /><Text style={{ color: '#0baa56', fontSize: 12 }}>Dapur</Text>
+                  </View>
+                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 }}>
+                    <Icon name='airline-seat-individual-suite' size={24} color='#0baa56' /><Text style={{ color: '#0baa56', fontSize: 12 }}>Kasur</Text>
+                  </View >
+                  <View style={{ alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 }}>
+                    <Icon name='wifi' size={24} color='#0baa56' /><Text style={{ color: '#0baa56', fontSize: 12 }}>Wifi - Internet</Text>
+                  </View>
+                </ScrollView>
+              </View>
+
+              <View style={{ marginVertical: 8 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 14 }}>Deskripsi Kos</Text>
+                <Text style={{ fontSize: 14 }}>{kost.description}</Text>
               </View>
             </View>
 
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderTopWidth: 0.5, borderBottomWidth: 0.5, marginVertical: 8 }}>
+              <Icon name='person' size={24} style={{ borderWidth: 1, padding: 4, borderRadius: 50, marginRight: 8 }} />
+              <Text style={{ fontWeight: 'bold' }}>{this.props.kost.detail.created_by.name}</Text>
+            </View>
           </View>
-          <View style={{ paddingHorizontal: 12 }}>
-            <View >
-              <Text style={{ fontWeight: 'bold', fontSize: 14, marginVertical: 18 }}>Kos Menarik Lainnya</Text>
+
+
+          <View style={{ paddingHorizontal: 12, marginTop: 4, marginBottom: 8 }}>
+            <View>
+              <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 4 }}>Kos Menarik Lainnya</Text>
             </View>
-            <View >
+            <View>
               <Image source={require('../Assets/Images/medan.jpg')} style={{ width: 100, height: 100 }} />
             </View>
           </View>
@@ -189,14 +176,14 @@ class DetailKost extends Component {
         <Footer>
           <FooterTab style={{ flexDirection: 'row', backgroundColor: 'white', alignItems: 'center', padding: 12, elevation: 8, paddingVertical: 8 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontWeight: 'bold' }}>Rp. {kost.price} / bulan</Text>
+              <Text style={{ fontWeight: 'bold' }}>{priceFormat(this.props.kost.detail.price)} / bulan</Text>
               <Text style={{ fontSize: 14 }}>Lihat semua harga</Text>
             </View>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <Button style={{ flex: 1, marginRight: 2, backgroundColor: 'transparent', borderColor: '#0baa56', borderWidth: 2, elevation: 0, borderRadius: 4 }} onPress={() => alert('hubungi kos')}>
                 <Text style={{ fontSize: 10, textAlign: 'center', color: '#0baa56' }}>Hubungi Kos</Text>
               </Button>
-              <Button style={{ flex: 1, marginLeft: 2, backgroundColor: '#0baa56', borderColor: '#0baa56', borderWidth: 2, elevation: 0, justifyContent: 'center', borderRadius: 4 }} onPress={() => this.props.navigation.navigate('Booking', {kost})}>
+              <Button style={{ flex: 1, marginLeft: 2, backgroundColor: '#0baa56', borderColor: '#0baa56', borderWidth: 2, elevation: 0, justifyContent: 'center', borderRadius: 4 }} onPress={() => this.props.navigation.navigate('Booking', { kost })}>
                 <Text style={{ fontSize: 10, textAlign: 'center', color: 'white' }}>Booking</Text>
               </Button>
             </View>
